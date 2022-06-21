@@ -27,45 +27,7 @@ func main() {
 
 	api.POST("users", userHandler.RegisterUser)
 	api.POST("sessions", userHandler.Login)
+	api.POST("email_checkers", userHandler.CheckEmailAvailability)
 
 	router.Run()
-
-	//userInput := user.RegisterUserInput{
-	//	Name:       "Tes Simpan dari service",
-	//	Occupation: "softwate engineer",
-	//	Email:      "contoh@gmail.com",
-	//	Password:   "darul",
-	//}
-	//
-	//userService.RegisterUser(userInput)
-
-	//
-	//fmt.Println("Connection to database success")
-	//
-	//var users []user.User
-	//db.Find(&users)
-	//
-	//for _, user := range users {
-	//	fmt.Println(user.Name)
-	//	fmt.Println(user.Email)
-	//	fmt.Println("===================")
-	//}
-
-	//router := gin.Default()
-	//router.GET("/handler", handler)
-	//router.Run()
 }
-
-//func handler(ctx *gin.Context) {
-//	dsn := "root:@tcp(127.0.0.1:3306)/golang_crowdfunding?charset=utf8mb4&parseTime=True&loc=Local"
-//	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-//
-//	if err != nil {
-//		log.Fatal(err.Error())
-//	}
-//
-//	var users []user.User
-//	db.Find(&users)
-//
-//	ctx.JSON(http.StatusOK, users)
-//}
