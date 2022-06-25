@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang-vue-nuxtjs-crowdfunding/auth"
@@ -34,16 +33,7 @@ func main() {
 	authService := auth.NewService()
 
 	userHandler := handler.NewUserHandler(userService, authService)
-
-	userID := 15
-	campaigns, err := campaignService.FindCampaigns(userID)
-	if err != nil {
-		return
-	}
-
-	for _, campaign := range campaigns {
-		fmt.Println(campaign.Name)
-	}
+	campaignHandler := handler.NewCampaignHandler(campaignService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -52,6 +42,8 @@ func main() {
 	api.POST("sessions", userHandler.Login)
 	api.POST("email_checkers", userHandler.CheckEmailAvailability)
 	api.POST("avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("campaigns", campaignHandler.GetCampaigns)
 
 	router.Run()
 }
