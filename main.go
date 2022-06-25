@@ -23,7 +23,6 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	//User
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
 
@@ -45,6 +44,7 @@ func main() {
 	api.POST("avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
 
 	api.GET("campaigns", campaignHandler.GetCampaigns)
+	api.GET("campaigns/:id", campaignHandler.GetCampaign)
 
 	router.Run()
 }
