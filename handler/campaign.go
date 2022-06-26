@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang-vue-nuxtjs-crowdfunding/campaign"
 	"golang-vue-nuxtjs-crowdfunding/helper"
+	"golang-vue-nuxtjs-crowdfunding/user"
 	"net/http"
 	"strconv"
 )
@@ -49,4 +50,32 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 
 	responnse := helper.APIResponse("Campaign detail", http.StatusOK, "success", campaign.FormatCampaignDetail(campaignDetail))
 	c.JSON(http.StatusOK, responnse)
+}
+
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		responnse := helper.APIResponse("Failed to create campaign", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, responnse)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+	input.User = currentUser
+
+	newCampaign, err := h.campaignService.CreateCampaign(input)
+	if err != nil {
+		responnse := helper.APIResponse("Failed to create campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, responnse)
+		return
+	}
+
+	responnse := helper.APIResponse("Success create campaign", http.StatusOK, "success", campaign.FormatCampaign(newCampaign))
+	c.JSON(http.StatusOK, responnse)
+
 }
