@@ -7,6 +7,7 @@ import (
 	"golang-vue-nuxtjs-crowdfunding/campaign"
 	"golang-vue-nuxtjs-crowdfunding/handler"
 	"golang-vue-nuxtjs-crowdfunding/helper"
+	"golang-vue-nuxtjs-crowdfunding/transaction"
 	"golang-vue-nuxtjs-crowdfunding/user"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -25,14 +26,17 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
+	transactionRepository := transaction.NewRepository(db)
 
 	userService := user.NewService(userRepository)
 	campaignService := campaign.NewService(campaignRepository)
+	transactionService := transaction.NewService(transactionRepository, campaignRepository)
 
 	authService := auth.NewService()
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
 	router.Static("/images", "./images")
@@ -48,6 +52,8 @@ func main() {
 	api.POST("campaigns", authMiddleware(authService, userService), campaignHandler.CreateCampaign)
 	api.PUT("campaigns/:id", authMiddleware(authService, userService), campaignHandler.UpdateCampaign)
 	api.POST("campaign-images", authMiddleware(authService, userService), campaignHandler.UploadImage)
+
+	api.GET("campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
 
 	router.Run()
 }
